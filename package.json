@@ -11,11 +11,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/socket.io-client": "^3.0.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0"
   },
   "dependencies": {
+    "jsonwebtoken": "^9.0.2",
     "mqtt": "^5.5.2",
     "socket.io-client": "^4.7.5"
   }

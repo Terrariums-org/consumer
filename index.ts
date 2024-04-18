@@ -1,7 +1,24 @@
+import { sign } from "jsonwebtoken";
 import { MqttClient, connect } from "mqtt";
 import { io } from "socket.io-client";
 
-async function consumeData() {
+async function connectToSocket() {
+  try {
+    const token = await sign({ name: "consumerService" }, "HaruYNacho", {
+      expiresIn: "1h",
+    });
+    const socket = await io("http://44.221.215.74:8080", {
+      auth: {
+        token,
+      },
+    });
+    consumeData(socket);
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+async function consumeData(socket: any) {
   try {
     const conn: MqttClient = connect("mqtt://52.206.90.192", {
       protocol: "mqtt",
@@ -29,7 +46,6 @@ async function consumeData() {
         const data = JSON.parse(message.toString());
         console.log(data);
         //enviar a traves de socket
-        const socket = await io("http://44.221.215.74:8080");
         socket.emit("sendData", data);
       }
       console.log(`Received message from topic ${topic}`);
@@ -39,4 +55,4 @@ async function consumeData() {
   }
 }
 
-consumeData();
+connectToSocket();
