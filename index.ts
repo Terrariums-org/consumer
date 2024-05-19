@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 
 async function connectToSocket(token: string) {
   try {
-    const socket = await io("http://44.221.215.74:8080", {
+    const socket = await io("http://localhost:8080", {
       auth: {
         token,
       },
