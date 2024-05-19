@@ -2,25 +2,22 @@ import { sign } from "jsonwebtoken";
 import { MqttClient, connect } from "mqtt";
 import { io } from "socket.io-client";
 
-async function connectToSocket() {
+async function connectToSocket(token: string) {
   try {
-    const token = await sign({ name: "consumerService" }, "HaruYNacho", {
-      expiresIn: "1h",
-    });
     const socket = await io("http://44.221.215.74:8080", {
       auth: {
         token,
       },
     });
-    consumeData(socket);
+    return socket;
   } catch (error: any) {
     throw new Error(error);
   }
 }
 
-async function consumeData(socket: any) {
+async function consumeData() {
   try {
-    const conn: MqttClient = connect("mqtt://52.206.90.192", {
+    const conn: MqttClient = connect("mqtt://54.91.42.48", {
       protocol: "mqtt",
       port: 1883,
       username: "guest",
@@ -42,10 +39,15 @@ async function consumeData(socket: any) {
     // Escuchar mensajes del topic "mqtt.metrics"
     conn.on("message", async (topic, message) => {
       if (topic === "mqtt/metrics/esp") {
+        const token = await sign({ name: "consumerService" }, "HaruYNacho", {
+          expiresIn: "1h",
+        });
+        const socket = await connectToSocket(token);
+
         //formatear información
         const data = JSON.parse(message.toString());
         console.log(data);
-        //enviar a traves de socket
+
         socket.emit("sendData", data);
       }
       console.log(`Received message from topic ${topic}`);
@@ -55,4 +57,4 @@ async function consumeData(socket: any) {
   }
 }
 
-connectToSocket();
+consumeData();
