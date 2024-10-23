@@ -80,7 +80,7 @@ amqplib.connect(amqpUrl, (error0, connection) => {
       throw new Error(error1);
     }
 
-    await channel.assertQueue(queue, { durable: false });
+    await channel.assertQueue(queue, { durable: true });
 
     console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
     channel.consume(queue, async function (msg: any) {
